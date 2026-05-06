@@ -19,6 +19,7 @@ class BaseballTrackerModern:
         
         self.pitch_x = None
         self.pitch_y = None
+        self.recent_pitches_frame = None
         
         self.load_players_from_db()
         self.create_widgets()
@@ -169,10 +170,12 @@ class BaseballTrackerModern:
         self.tab_zapis = self.tabview.add("Zápis nadhozů")
         self.tab_staty = self.tabview.add("Statistiky")
         self.tab_edit = self.tabview.add("Edit hráčů")
+        self.tab_recent = self.tabview.add("Poslední nadhozy")
         
         self.build_zapis_tab()
         self.build_staty_tab()
         self.build_edit_players_tab()
+        self.build_recent_pitches_tab()
 
     # ==========================================
     # STRÁNKA 1: ZÁPIS NADHOZŮ
@@ -274,6 +277,11 @@ class BaseballTrackerModern:
 
         self.refresh_edit_player_menu()
 
+    def build_recent_pitches_tab(self):
+        self.recent_pitches_frame = ctk.CTkScrollableFrame(self.tab_recent)
+        self.recent_pitches_frame.pack(fill="both", expand=True, padx=20, pady=20)
+        self.update_recent_pitches()
+
     # ==========================================
     # STRÁNKA 2: STATISTIKY (INTERAKTIVNÍ)
     # ==========================================
@@ -351,6 +359,7 @@ class BaseballTrackerModern:
             
         self.canvas.delete("pitch_mark")
         self.pitch_x = None
+        self.update_recent_pitches()
 
     def draw_charts(self):
         # 1. Načtení dat z DB (teď už nám stačí jen ID a data o nadhozu)
@@ -437,6 +446,33 @@ class BaseballTrackerModern:
         self.canvas_widget = FigureCanvasTkAgg(fig, master=self.chart_frame)
         self.canvas_widget.draw()
         self.canvas_widget.get_tk_widget().pack(fill="both", expand=True)
+
+
+    def update_recent_pitches(self):
+        # Clear existing content
+        for widget in self.recent_pitches_frame.winfo_children():
+            widget.destroy()
+        
+        # Add title
+        ctk.CTkLabel(self.recent_pitches_frame, text="Poslední nadhozy:", font=ctk.CTkFont(size=16, weight="bold")).pack(pady=10)
+        
+        pitches = database.get_recent_pitches(10)  # Show more pitches, say 10
+        if not pitches:
+            ctk.CTkLabel(self.recent_pitches_frame, text="Žádné nadhozy zatím nebyly zaznamenány.").pack(pady=20)
+            return
+        
+        for pitch in pitches:
+            pitch_id, date_time, pitcher_id, batter_id, pitch_type, pitch_result, x_loc, y_loc, pitcher_name, batter_name = pitch
+            display_text = f"{date_time[:19]}: {pitcher_name} vs {batter_name} - {pitch_type} ({pitch_result})"
+            frame = ctk.CTkFrame(self.recent_pitches_frame)
+            frame.pack(fill="x", padx=5, pady=2)
+            ctk.CTkLabel(frame, text=display_text).pack(side="left", padx=5)
+            btn_delete = ctk.CTkButton(frame, text="Smazat", fg_color="red", command=lambda pid=pitch_id: self.delete_pitch(pid))
+            btn_delete.pack(side="right", padx=5)
+
+    def delete_pitch(self, pitch_id):
+        database.delete_pitch(pitch_id)
+        self.update_recent_pitches()
 
 
 if __name__ == "__main__":

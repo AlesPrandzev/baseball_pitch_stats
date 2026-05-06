@@ -3,6 +3,7 @@ __pycache__/
 *.pyo
 *.pyd¨
 
+baseball.db
 
 venv/
 env/

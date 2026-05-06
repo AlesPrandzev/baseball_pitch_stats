@@ -115,6 +115,30 @@ def update_player(player_id, first_name, last_name, team, jersey_number, throws,
     conn.commit()
     conn.close()
 
+def get_recent_pitches(limit=3):
+    conn = connect()
+    cursor = conn.cursor()
+    cursor.execute('''
+        SELECT p.id, p.date_time, p.pitcher_id, p.batter_id, p.pitch_type, p.pitch_result, p.x_location, p.y_location,
+               pitcher.first_name || ' ' || pitcher.last_name AS pitcher_name,
+               batter.first_name || ' ' || batter.last_name AS batter_name
+        FROM pitches p
+        JOIN players pitcher ON p.pitcher_id = pitcher.id
+        JOIN players batter ON p.batter_id = batter.id
+        ORDER BY p.date_time DESC
+        LIMIT ?
+    ''', (limit,))
+    pitches = cursor.fetchall()
+    conn.close()
+    return pitches
+
+def delete_pitch(pitch_id):
+    conn = connect()
+    cursor = conn.cursor()
+    cursor.execute('DELETE FROM pitches WHERE id = ?', (pitch_id,))
+    conn.commit()
+    conn.close()
+
 # Testovací blok
 if __name__ == "__main__":
     create_tables()
