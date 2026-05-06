@@ -80,7 +80,7 @@ if __name__ == "__main__":
     database.create_tables()
     
     # URL adresa z tvého zadání
-    URL = "https://baseball.cz/competition/roster/1?team=6110&season=21"
+    URL = "https://baseball.cz/competition/roster/1?team=5830&season=21"
     
     # Spuštění importu
     import_roster_from_web(URL)
