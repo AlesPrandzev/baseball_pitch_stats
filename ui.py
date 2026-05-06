@@ -232,7 +232,7 @@ class BaseballTrackerModern:
         self.pitch_date.insert(0, date.today().isoformat())
         self.pitch_date.pack(side="left", padx=0, pady=10)
         
-        self.pitch_type = ctk.CTkOptionMenu(frame_details, values=["Fastball", "Curveball", "Slider", "Changeup"])
+        self.pitch_type = ctk.CTkOptionMenu(frame_details, values=["Changeup", "Curveball", "Cutter", "Four-Seam Fastball", "Two-Seam Fastball", "Knuckleball", "Slider", "Splitter"])
         self.pitch_type.pack(side="left", padx=10, pady=10, expand=True)
         self.pitch_result = ctk.CTkOptionMenu(frame_details, values=["Called Strike", "Swinging Strike", "Foul Ball", "Ball", "In Play", "Hard Hit", "Soft Hit"])
         self.pitch_result.pack(side="right", padx=10, pady=10, expand=True)
