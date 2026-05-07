@@ -1,2 +1,2 @@
 # baseball_pitch_stats
-Pitching stats for pitchers
+Pitching stats for pitchers, (ai slop) interface

@@ -125,7 +125,7 @@ def get_recent_pitches(limit=3):
         FROM pitches p
         JOIN players pitcher ON p.pitcher_id = pitcher.id
         JOIN players batter ON p.batter_id = batter.id
-        ORDER BY p.date_time DESC
+        ORDER BY p.id DESC
         LIMIT ?
     ''', (limit,))
     pitches = cursor.fetchall()
